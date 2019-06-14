@@ -1,18 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ pageTitle }}!{% endblock %}
+{% block title %}{{ pageTitle }}{% endblock %}
+
+{% block stylesheets %}
+
+    <!--
+    <style>
+
+        #header {
+            width: 100%;
+            height: 200px;
+        }
+
+    </style>
+    -->
+
+{% endblock %}
 
 {% block body %}
 
+    <!--
+    <div id="header">
+        <img src="https://www.eyeonsouthflorida.com/wp-content/uploads/2016/07/craft-beer.jpg" class="img-fluid">
+    </div>
+    -->
+
     <div class="container">
 
-        <!-- Head -->
-        <div class="row">
-            <div class="col">
-                <img src="https://www.eyeonsouthflorida.com/wp-content/uploads/2016/07/craft-beer.jpg">
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-6">
+                <h2>Enter your current LAT/LONG coordinates</h2><br>
+
+                {{ form_start(coordForm) }}
+
+                    {{ form_errors(coordForm.latCoord) }}
+                    {{ form_widget(coordForm.latCoord) }}
+                    <br>
+
+                    {{ form_errors(coordForm.longCoord) }}
+                    {{ form_widget(coordForm.longCoord) }}
+
+                    <div class="text-center">
+                        <button class="btn btn-success mt-3 mb-5" type="submit">Start the trip!</button>
+                    </div>
+
+                {{ form_end(coordForm) }}
+
             </div>
         </div>
 
+
+        {% if visitedBreweries %}
+
+            <div class="row mt-5">
+                <div class="col">
+
+                    {% for brewerie in visitedBreweries %}
+                        {{ brewerie }}<br>
+                    {% endfor %}
+
+                </div>
+                <div class="col">
+
+                    {% for beerType in collectedBeer %}
+                        {{ beerType }}<br>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        {% endif %}
     </div>
 
 {% endblock %}
