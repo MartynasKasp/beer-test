@@ -29,7 +29,7 @@
 
         <div class="row justify-content-center mt-5">
             <div class="col-12 col-md-6">
-                <h2>Enter your current LAT/LONG coordinates</h2><br>
+                <h2>Enter LAT/LONG coordinates</h2><br>
 
                 {{ form_start(coordForm) }}
 
@@ -41,7 +41,7 @@
                     {{ form_widget(coordForm.longCoord) }}
 
                     <div class="text-center">
-                        <button class="btn btn-success mt-3 mb-5" type="submit">Start the trip!</button>
+                        <button class="btn btn-success mt-3 mb-5" type="submit" name="givenLocation">Start the trip!</button>
                     </div>
 
                 {{ form_end(coordForm) }}
@@ -53,11 +53,18 @@
         {% if visitedBreweries %}
 
             <div class="row mt-5">
+
                 <div class="col">
+
+                    You have visited {{ visitedBreweries|length }} breweries in total:
+                    <br>
 
                     {% for brewerie in visitedBreweries %}
                         {{ brewerie }}<br>
                     {% endfor %}
+                    <br>
+
+                    Total distance traveled: {{ distanceTraveled }} KM.
 
                 </div>
                 <div class="col">
@@ -67,9 +74,11 @@
                     {% endfor %}
 
                 </div>
+
             </div>
 
         {% endif %}
+
     </div>
 
 {% endblock %}
