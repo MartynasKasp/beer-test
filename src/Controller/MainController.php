@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\VisitedBrewery;
 use App\Form\CoordinatesType;
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,15 +39,25 @@ class MainController extends AbstractController
 
             $result = $statement->fetch();
 
+            $visitedBrewery = new VisitedBrewery();
+            $visitedBrewery->setLongitude($this->originLong);
+            $visitedBrewery->setLatitude($this->originLat);
+            $visitedBrewery->setName("HOME");
+            $visitedBrewery->setDistance(0);
+
+            $this->visitedBreweries[] = $visitedBrewery;
+
             $this->findNextBrewery($result['count'], $this->originLat, $this->originLong);
         }
 
         return $this->render('main/index.html.twig', [
             'pageTitle' => 'Beer test',
             'coordForm' => $form->createView(),
-            'visitedBreweries' => $this->visitedBreweries,
+            //'visitedBreweries' => $this->visitedBreweries,
             'collectedBeer' => $this->collectedBeer,
             'distanceTraveled' => $this->distanceTraveled,
+            'flashMessages' => 0,
+            'visitedBreweries' => $this->visitedBreweries,
         ]);
     }
 
@@ -72,7 +83,7 @@ class MainController extends AbstractController
                 continue;
             }
 
-            if (in_array($i, $this->visitedBreweries)) {
+            if (in_array($i, $this->visitedBreweries->getBreweryId())) {
                 continue;
             }
 
@@ -100,14 +111,23 @@ class MainController extends AbstractController
 
             if ($this->distanceTraveled + $minDistance + $distanceFromNextToHome < $this->maximumDistance) {
 
-                $this->visitedBreweries[] = $geoCodesIds[$nextBrewery];
+                //$this->visitedBreweries[] = $geoCodesIds[$nextBrewery];
                 $this->distanceTraveled += $minDistance;
+
+                $visitedBrewery = new VisitedBrewery();
+                $visitedBrewery->setId($result['brewery_id']);
+                $visitedBrewery->setDistance($minDistance);
+                $visitedBrewery->setLatitude($result['latitude']);
+                $visitedBrewery->setLongitude($result['longitude']);
+                $visitedBrewery->setGeoCodeId($geoCodesIds[$nextBrewery]);
+
+                $this->visitedBreweries[] = $visitedBrewery;
 
                 $this->findNextBrewery($breweriesCount, $result['latitude'], $result['longitude']);
             }
-        }
-        else {
-            $this->addFlash('error', 'You need more jet fuel to travel from this location!');
+        } else {
+
+            return $this->addFlash('error', 'You need more jet fuel to travel from this location!');
         }
     }
 
@@ -127,7 +147,7 @@ class MainController extends AbstractController
         return round($angle * $earthRadius);
     }
 
-    public function fillTravelMatrix($matrixSize)
+    /*public function fillTravelMatrix($matrixSize)
     {
         $result1 = null;
         $result2 = null;
@@ -158,6 +178,7 @@ class MainController extends AbstractController
             }
         }
 
+        /*
         $check = $this->haversineDistance(
             30.22340012, -97.76969910, 37.78250122, -122.39299774
         );
@@ -167,5 +188,6 @@ class MainController extends AbstractController
             echo "Reiksmes sutampa";
         }
         echo $this->travelMatrix[1][1], $this->travelMatrix[2][2];
-    }
+        /
+    }*/
 }
