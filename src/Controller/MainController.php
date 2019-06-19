@@ -66,16 +66,15 @@ class MainController extends AbstractController
 
 
         return $this->render('main/index.html.twig', [
-            'pageTitle' => 'Beer test',
+            'pageTitle' => 'BEER TEST',
             'coordForm' => $form->createView(),
             'collectedBeer' => $this->collectedBeer,
             'distanceTraveled' => $this->distanceTraveled,
             'flashMessages' => 0,
-            'serializedArray' => $serializer->serialize($this->visitedBreweries, "json"),
+            'serializedBreweries' => $serializer->serialize($this->visitedBreweries, "json"),
             'visitedBreweries' => $this->visitedBreweries,
             'startLat' => $this->originLat,
             'startLong' => $this->originLong,
-            'locationInfo' => [],
         ]);
     }
 
@@ -120,11 +119,6 @@ class MainController extends AbstractController
                 $distanceBetween = $this->haversineDistance($currentLat, $currentLong, $result['latitude'], $result['longitude']);
 
                 if ($distanceBetween < ($this->maximumDistance / 2)) {
-
-                    /*$distances[] = [
-                        "distance" => $distanceBetween,
-                        "geoCode" => $i
-                    ];*/
 
                     $distances[] = $distanceBetween;
                     $geoCodesIds[] = $i;
@@ -213,7 +207,7 @@ class MainController extends AbstractController
      * @param $id
      * @return mixed
      */
-    public function getBreweryName($id)
+    private function getBreweryName($id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -230,7 +224,7 @@ class MainController extends AbstractController
     /**
      * @param $id
      */
-    public function getBreweryBeers($id)
+    private function getBreweryBeers($id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -245,48 +239,4 @@ class MainController extends AbstractController
             $this->collectedBeer[] = $beer['name'];
         }
     }
-
-    /*public function fillTravelMatrix($matrixSize)
-    {
-        $result1 = null;
-        $result2 = null;
-
-        $em = $this->getDoctrine()->getManager();
-
-        $query = "SELECT latitude, longitude FROM geocodes WHERE id = :id";
-
-        $statement = $em->getConnection()->prepare($query);
-
-        for($i = 1; $i <= $matrixSize; $i++) {
-
-            $statement->bindValue('id', $i);
-            $statement->execute();
-
-            $result1 = $statement->fetch();
-
-            for($j = 1; $j <= $matrixSize; $j++) {
-
-                $statement->bindValue('id', $i);
-                $statement->execute();
-
-                $result2 = $statement->fetch();
-
-                $this->travelMatrix[$i][$j] = $this->haversineDistance(
-                    $result1['latitude'], $result1['longitude'], $result2['latitude'], $result2['longitude']
-                );
-            }
-        }
-
-        /*
-        $check = $this->haversineDistance(
-            30.22340012, -97.76969910, 37.78250122, -122.39299774
-        );
-
-        if($check === $this->travelMatrix[1][2]) {
-
-            echo "Reiksmes sutampa";
-        }
-        echo $this->travelMatrix[1][1], $this->travelMatrix[2][2];
-        /
-    }*/
 }
