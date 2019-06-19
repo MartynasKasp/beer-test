@@ -105,7 +105,7 @@
 
         function initMap() {
 
-            let locations = JSON.parse({{ serializedArray|json_encode|raw }});
+            let locations = JSON.parse({{ serializedBreweries|json_encode|raw }});
 
             let centerLocation = {
                 lat: parseFloat(document.getElementById('map').getAttribute('data-lat')),
