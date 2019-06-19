@@ -13,8 +13,8 @@
     <div class="container mb-5">
 
         <div class="row justify-content-center mt-5">
-            <div class="col-12 col-md-6">
-                <h2>Enter LAT/LONG coordinates</h2><br>
+            <div class="col-12 col-md-4">
+                <h4>Enter LAT/LONG coordinates</h4><br>
 
                 {{ form_start(coordForm) }}
 
@@ -52,31 +52,37 @@
 
             <div class="row mt-5">
 
-                <div class="col mr-5">
+                <div class="col-12 col-md-6 border rounded pt-2 lightgrey-block">
 
                     {% set visitedCount = visitedBreweries|length - 2 %}
                     <b>You have visited <i>{{ visitedCount }}</i> breweries in total:</b>
                     <br>
 
+                    <ul>
                     {% for brewery in visitedBreweries %}
-                        &#8195;{% if brewery.id > -1 %}[ {{ brewery.id }} ] {% endif %}{{ brewery.name }}: {{ brewery.latitude }} {{ brewery.longitude }}, distance {{ brewery.distance }}<br>
-
+                        <li>
+                            {% if brewery.id > -1 %}[ {{ brewery.id }} ] {% endif %} <strong>{{ brewery.name }}</strong>: <i>{{ brewery.latitude }} {{ brewery.longitude }}</i><b>,</b> distance {{ brewery.distance }}
+                        </li>
                     {% endfor %}
-                    <br>
+                    </ul>
 
                     <b>Total distance travelled: <i>{{ distanceTraveled }}</i> KM.</b>
 
 
                 </div>
 
-                <div class="col">
+
+
+                <div class="col-12 col-md-5 border rounded pt-2 ml-3 lightgrey-block">
 
                     <b>Collected <i>{{ collectedBeer|length }}</i> beer types:</b>
                     <br>
 
+                    <ul>
                     {% for beerType in collectedBeer %}
-                        &#8195;{{ beerType }}<br>
+                        <li>{{ beerType }}</li>
                     {% endfor %}
+                    </ul>
 
                 </div>
 
