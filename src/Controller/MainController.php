@@ -8,6 +8,11 @@ use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class MainController extends AbstractController
 {
@@ -53,17 +58,33 @@ class MainController extends AbstractController
             $this->findNextBrewery($result['count'], $this->originLat, $this->originLong);
         }
 
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [
+            new ObjectNormalizer()
+        ];
+        $serializer = new Serializer($normalizers, $encoders);
+
+
         return $this->render('main/index.html.twig', [
             'pageTitle' => 'Beer test',
             'coordForm' => $form->createView(),
             'collectedBeer' => $this->collectedBeer,
             'distanceTraveled' => $this->distanceTraveled,
             'flashMessages' => 0,
+            'serializedArray' => $serializer->serialize($this->visitedBreweries, "json"),
             'visitedBreweries' => $this->visitedBreweries,
+            'startLat' => $this->originLat,
+            'startLong' => $this->originLong,
+            'locationInfo' => [],
         ]);
     }
 
-    public function findNextBrewery($breweriesCount, $currentLat, $currentLong)
+    /**
+     * @param $breweriesCount
+     * @param $currentLat
+     * @param $currentLong
+     */
+    private function findNextBrewery($breweriesCount, $currentLat, $currentLong)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -164,6 +185,14 @@ class MainController extends AbstractController
         }
     }
 
+    /**
+     * @param $latitudeFrom
+     * @param $longitudeFrom
+     * @param $latitudeTo
+     * @param $longitudeTo
+     * @param int $earthRadius
+     * @return float
+     */
     public function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371)
     {
         $latFrom = deg2rad($latitudeFrom);
@@ -180,6 +209,10 @@ class MainController extends AbstractController
         return round($angle * $earthRadius);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getBreweryName($id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -194,6 +227,9 @@ class MainController extends AbstractController
         return $result['name'];
     }
 
+    /**
+     * @param $id
+     */
     public function getBreweryBeers($id)
     {
         $em = $this->getDoctrine()->getManager();

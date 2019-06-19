@@ -4,11 +4,7 @@
 
 {% block stylesheets %}
 
-    <style>
-        body{
-            background-color: #F9F9F9;
-        }
-    </style>
+    {{ encore_entry_link_tags('appMain') }}
 
 {% endblock %}
 
@@ -64,10 +60,12 @@
 
                     {% for brewery in visitedBreweries %}
                         &#8195;[ {{ brewery.id }} ] {{ brewery.name }}: {{ brewery.latitude }} {{ brewery.longitude }}, distance {{ brewery.distance }}<br>
+
                     {% endfor %}
                     <br>
 
                     <b>Total distance travelled: <i>{{ distanceTraveled }}</i> KM.</b>
+
 
                 </div>
 
@@ -84,8 +82,65 @@
 
             </div>
 
+            <div class="row mt-5">
+                <div class="col">
+
+                    <div id="map" data-lat="{{ startLat }}" data-long="{{ startLong }}"></div>
+
+                </div>
+            </div>
+
         {% endif %}
 
+
     </div>
+
+    <script>
+
+        function initMap() {
+
+            let locations = JSON.parse({{ serializedArray|json_encode|raw }});
+
+            let centerLocation = {
+                lat: parseFloat(document.getElementById('map').getAttribute('data-lat')),
+                lng: parseFloat(document.getElementById('map').getAttribute('data-long'))
+            };
+
+            let map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: centerLocation
+            });
+
+            let infoWindow = new google.maps.InfoWindow();
+            let marker, i;
+
+            for(i = 0; i < locations.length - 1; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(
+                        locations[i].latitude, locations[i].longitude
+                    ),
+                    map: map
+                });
+
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function(){
+                        infoWindow.setContent(locations[i].name);
+                        infoWindow.open(map, marker);
+                    }
+                })(marker, i));
+            }
+        }
+
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeW_VhTv-T3H1ZHwxYN8qFvJTALPPdGFE&callback=initMap">
+    </script>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {# {{ encore_entry_script_tags('googleMap') }} #}
 
 {% endblock %}
