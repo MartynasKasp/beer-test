@@ -1,15 +1,21 @@
+/.idea
+
 # Cache and logs (Symfony2)
 /app/cache/*
 /app/logs/*
 !app/cache/.gitkeep
 !app/logs/.gitkeep
-
+/.env.local
+/.env.local.php
+/.env.*.local
+/public/bundles/
+/public/uploads
+/var/
 
 # Email spool folder
 /app/spool/*
 
 # Cache, session files and logs (Symfony3)
-/var/
 /var/cache/*
 /var/logs/*
 /var/sessions/*
@@ -40,6 +46,14 @@
 # Build data
 /build/
 
+# Webpack-encore
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+symfony.lock
+yarn.lock
+
 # Composer PHAR
 /composer.phar
 
@@ -48,10 +62,3 @@
 
 # Embedded web-server pid file
 /.web-server-pid
-
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-/public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###
