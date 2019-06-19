@@ -41,6 +41,16 @@ class VisitedBrewery
      */
     private $distance;
 
+    public function __construct($id, $name, $latitude, $longitude, $geoCodeId, $distance)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
+        $this->geoCodeId = $geoCodeId;
+        $this->distance = $distance;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

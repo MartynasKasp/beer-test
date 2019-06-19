@@ -46,10 +46,10 @@
 
             <div class="row mt-5">
 
-                <div class="col">
+                <div class="col mr-3">
 
-                    {% set visitedCount = visitedBreweries|length - 1 %}
-                    You have visited {{ visitedCount }} breweries in total:
+                    {% set visitedCount = visitedBreweries|length - 2 %}
+                    <b>You have visited <i>{{ visitedCount }}</i> breweries in total:</b>
                     <br>
 
                     {% for brewery in visitedBreweries %}
@@ -57,10 +57,14 @@
                     {% endfor %}
                     <br>
 
-                    Total distance traveled: {{ distanceTraveled }} KM.
+                    <b>Total distance travelled: <i>{{ distanceTraveled }}</i> KM.</b>
 
                 </div>
+
                 <div class="col">
+
+                    <b>Collected <i>{{ collectedBeer|length }}</i> beer types:</b>
+                    <br>
 
                     {% for beerType in collectedBeer %}
                         {{ beerType }}<br>
