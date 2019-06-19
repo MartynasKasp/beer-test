@@ -60,9 +60,16 @@ class MainController extends AbstractController
             'distanceTraveled' => $this->distanceTraveled,
             'flashMessages' => 0,
             'visitedBreweries' => $this->visitedBreweries,
+            'startLat' => $this->originLat,
+            'startLong' =>$this->originLong,
         ]);
     }
 
+    /**
+     * @param $breweriesCount
+     * @param $currentLat
+     * @param $currentLong
+     */
     public function findNextBrewery($breweriesCount, $currentLat, $currentLong)
     {
         $em = $this->getDoctrine()->getManager();
@@ -164,6 +171,14 @@ class MainController extends AbstractController
         }
     }
 
+    /**
+     * @param $latitudeFrom
+     * @param $longitudeFrom
+     * @param $latitudeTo
+     * @param $longitudeTo
+     * @param int $earthRadius
+     * @return float
+     */
     public function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371)
     {
         $latFrom = deg2rad($latitudeFrom);
@@ -180,6 +195,10 @@ class MainController extends AbstractController
         return round($angle * $earthRadius);
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function getBreweryName($id)
     {
         $em = $this->getDoctrine()->getManager();
@@ -194,6 +213,9 @@ class MainController extends AbstractController
         return $result['name'];
     }
 
+    /**
+     * @param $id
+     */
     public function getBreweryBeers($id)
     {
         $em = $this->getDoctrine()->getManager();

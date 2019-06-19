@@ -4,11 +4,7 @@
 
 {% block stylesheets %}
 
-    <style>
-        body{
-            background-color: #F9F9F9;
-        }
-    </style>
+    {{ encore_entry_link_tags('appMain') }}
 
 {% endblock %}
 
@@ -84,8 +80,51 @@
 
             </div>
 
+            <div class="row mt-5">
+                <div class="col">
+
+                    <div id="map" data-lat="{{ startLat }}" data-long="{{ startLong }}"></div>
+
+                </div>
+            </div>
+
         {% endif %}
 
+
     </div>
+
+    <script>
+
+        function initMap() {
+
+            let centerLocation = {
+                lat: parseFloat(document.getElementById('map').getAttribute('data-lat')),
+                lng: parseFloat(document.getElementById('map').getAttribute('data-long'))
+            };
+
+            console.log(centerLocation.lat);
+
+            let map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: centerLocation
+            });
+
+            let marker = new google.maps.Marker({
+                position: centerLocation,
+                map: map
+            });
+        }
+
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeW_VhTv-T3H1ZHwxYN8qFvJTALPPdGFE&callback=initMap">
+    </script>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {# {{ encore_entry_script_tags('googleMap') }} #}
 
 {% endblock %}
