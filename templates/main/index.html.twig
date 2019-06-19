@@ -4,32 +4,21 @@
 
 {% block stylesheets %}
 
-    <!--
     <style>
-
-        #header {
-            width: 100%;
-            height: 200px;
+        body{
+            background-color: #F9F9F9;
         }
-
     </style>
-    -->
 
 {% endblock %}
 
 {% block body %}
 
-    <!--
-    <div id="header">
-        <img src="https://www.eyeonsouthflorida.com/wp-content/uploads/2016/07/craft-beer.jpg" class="img-fluid">
-    </div>
-    -->
-
-    <div class="container">
+    <div class="container mb-5">
 
         <div class="row justify-content-center mt-5">
             <div class="col-12 col-md-6">
-                <h2>Enter your current LAT/LONG coordinates</h2><br>
+                <h2>Enter LAT/LONG coordinates</h2><br>
 
                 {{ form_start(coordForm) }}
 
@@ -41,7 +30,7 @@
                     {{ form_widget(coordForm.longCoord) }}
 
                     <div class="text-center">
-                        <button class="btn btn-success mt-3 mb-5" type="submit">Start the trip!</button>
+                        <button class="btn btn-success mt-3 mb-5" type="submit" name="givenLocation">Start the trip!</button>
                     </div>
 
                 {{ form_end(coordForm) }}
@@ -49,27 +38,54 @@
             </div>
         </div>
 
+        {% for message in app.flashes('error') if flashMessages == 0 %}
 
-        {% if visitedBreweries %}
-
-            <div class="row mt-5">
-                <div class="col">
-
-                    {% for brewerie in visitedBreweries %}
-                        {{ brewerie }}<br>
-                    {% endfor %}
-
-                </div>
-                <div class="col">
-
-                    {% for beerType in collectedBeer %}
-                        {{ beerType }}<br>
-                    {% endfor %}
-
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <div class="alert alert-danger">
+                        <strong>{{ message }}</strong>
+                    </div>
                 </div>
             </div>
 
+            {% set flashMessages = 1 %}
+
+        {% endfor %}
+
+        {% if visitedBreweries and flashMessages == 0 %}
+
+            <div class="row mt-5">
+
+                <div class="col mr-5">
+
+                    {% set visitedCount = visitedBreweries|length - 2 %}
+                    <b>You have visited <i>{{ visitedCount }}</i> breweries in total:</b>
+                    <br>
+
+                    {% for brewery in visitedBreweries %}
+                        &#8195;[ {{ brewery.id }} ] {{ brewery.name }}: {{ brewery.latitude }} {{ brewery.longitude }}, distance {{ brewery.distance }}<br>
+                    {% endfor %}
+                    <br>
+
+                    <b>Total distance travelled: <i>{{ distanceTraveled }}</i> KM.</b>
+
+                </div>
+
+                <div class="col">
+
+                    <b>Collected <i>{{ collectedBeer|length }}</i> beer types:</b>
+                    <br>
+
+                    {% for beerType in collectedBeer %}
+                        &#8195;{{ beerType }}<br>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
         {% endif %}
+
     </div>
 
 {% endblock %}
