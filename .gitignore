@@ -1,4 +1,4 @@
-/.idea
+/.idea/
 
 # Cache and logs (Symfony2)
 /app/cache/*
@@ -62,8 +62,3 @@ yarn.lock
 
 # Embedded web-server pid file
 /.web-server-pid
-
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
