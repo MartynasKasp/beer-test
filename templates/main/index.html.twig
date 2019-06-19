@@ -59,7 +59,7 @@
                     <br>
 
                     {% for brewery in visitedBreweries %}
-                        &#8195;[ {{ brewery.id }} ] {{ brewery.name }}: {{ brewery.latitude }} {{ brewery.longitude }}, distance {{ brewery.distance }}<br>
+                        &#8195;{% if brewery.id > -1 %}[ {{ brewery.id }} ] {% endif %}{{ brewery.name }}: {{ brewery.latitude }} {{ brewery.longitude }}, distance {{ brewery.distance }}<br>
 
                     {% endfor %}
                     <br>
