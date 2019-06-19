@@ -8,6 +8,11 @@ use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class MainController extends AbstractController
 {
@@ -53,15 +58,24 @@ class MainController extends AbstractController
             $this->findNextBrewery($result['count'], $this->originLat, $this->originLong);
         }
 
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [
+            new ObjectNormalizer()
+        ];
+        $serializer = new Serializer($normalizers, $encoders);
+
+
         return $this->render('main/index.html.twig', [
             'pageTitle' => 'Beer test',
             'coordForm' => $form->createView(),
             'collectedBeer' => $this->collectedBeer,
             'distanceTraveled' => $this->distanceTraveled,
             'flashMessages' => 0,
+            'serializedArray' => $serializer->serialize($this->visitedBreweries, "json"),
             'visitedBreweries' => $this->visitedBreweries,
             'startLat' => $this->originLat,
-            'startLong' =>$this->originLong,
+            'startLong' => $this->originLong,
+            'locationInfo' => [],
         ]);
     }
 
@@ -70,7 +84,7 @@ class MainController extends AbstractController
      * @param $currentLat
      * @param $currentLong
      */
-    public function findNextBrewery($breweriesCount, $currentLat, $currentLong)
+    private function findNextBrewery($breweriesCount, $currentLat, $currentLong)
     {
         $em = $this->getDoctrine()->getManager();
 
