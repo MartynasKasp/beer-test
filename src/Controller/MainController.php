@@ -114,24 +114,12 @@ class MainController extends AbstractController
         if (!empty($distances)) {
 
             $minDistance = min($distances);
-            //echo 'Min distance: '. $minDistance .'<br>';
             $nextBrewery = array_search($minDistance, $distances);
-            //echo 'Next geo code id: '. $nextBrewery .'<br>';
 
             $statement->bindValue('id', $geoCodesIds[$nextBrewery]);
             $statement->execute();
 
             $result = $statement->fetch();
-
-            //echo 'Brewery id from database '. $result['brewery_id'] .'<br><br>';
-
-            /*echo '<pre>';
-            print_r($distances);
-            echo '</pre>';
-
-            echo '<pre>';
-            print_r($geoCodesIds);
-            echo '</pre>';*/
 
             $distanceFromNextToHome = $this->haversineDistance(
                 $this->originLat, $this->originLong, $result['latitude'], $result['longitude']
@@ -151,6 +139,8 @@ class MainController extends AbstractController
                 );
 
                 $this->visitedBreweries[] = $visitedBrewery;
+
+                $this->getBreweryBeers($result['brewery_id']);
 
                 return $this->findNextBrewery($breweriesCount, $result['latitude'], $result['longitude']);
             }
@@ -202,6 +192,22 @@ class MainController extends AbstractController
         $result = $statement->fetch();
 
         return $result['name'];
+    }
+
+    public function getBreweryBeers($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $query = "SELECT name FROM beers WHERE brewery_id = :id";
+        $statement = $em->getConnection()->prepare($query);
+        $statement->bindValue('id', $id);
+        $statement->execute();
+
+        $result = $statement->fetchAll();
+
+        foreach($result as $beer) {
+            $this->collectedBeer[] = $beer['name'];
+        }
     }
 
     /*public function fillTravelMatrix($matrixSize)
