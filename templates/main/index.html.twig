@@ -1,18 +1,152 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ pageTitle }}!{% endblock %}
+{% block title %}{{ pageTitle }}{% endblock %}
+
+{% block stylesheets %}
+
+    {{ encore_entry_link_tags('appMain') }}
+
+{% endblock %}
 
 {% block body %}
 
-    <div class="container">
+    <div class="container mb-5">
 
-        <!-- Head -->
-        <div class="row">
-            <div class="col">
-                <img src="https://www.eyeonsouthflorida.com/wp-content/uploads/2016/07/craft-beer.jpg">
+        <div class="row justify-content-center mt-5">
+            <div class="col-12 col-md-4">
+                <h4>Enter LAT/LONG coordinates</h4><br>
+
+                {{ form_start(coordForm) }}
+
+                    {{ form_errors(coordForm.latCoord) }}
+                    {{ form_widget(coordForm.latCoord) }}
+                    <br>
+
+                    {{ form_errors(coordForm.longCoord) }}
+                    {{ form_widget(coordForm.longCoord) }}
+
+                    <div class="text-center">
+                        <button class="btn btn-success mt-3 mb-5" type="submit" name="givenLocation">Start the trip!</button>
+                    </div>
+
+                {{ form_end(coordForm) }}
+
             </div>
         </div>
 
+        {% for message in app.flashes('error') if flashMessages == 0 %}
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <div class="alert alert-danger">
+                        <strong>{{ message }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            {% set flashMessages = 1 %}
+
+        {% endfor %}
+
+        {% if visitedBreweries and flashMessages == 0 %}
+
+            <div class="row mt-5">
+
+                <div class="col-12 col-md-6 border rounded pt-2 lightgrey-block">
+
+                    {% set visitedCount = visitedBreweries|length - 2 %}
+                    <b>You have visited <i>{{ visitedCount }}</i> breweries in total:</b>
+                    <br>
+
+                    <ul>
+                    {% for brewery in visitedBreweries %}
+                        <li>
+                            {% if brewery.id > -1 %}[ {{ brewery.id }} ] {% endif %} <strong>{{ brewery.name }}</strong>: <i>{{ brewery.latitude }} {{ brewery.longitude }}</i><b>,</b> distance {{ brewery.distance }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+
+                    <b>Total distance travelled: <i>{{ distanceTraveled }}</i> KM.</b>
+
+
+                </div>
+
+
+
+                <div class="col-12 col-md-5 border rounded pt-2 ml-3 lightgrey-block">
+
+                    <b>Collected <i>{{ collectedBeer|length }}</i> beer types:</b>
+                    <br>
+
+                    <ul>
+                    {% for beerType in collectedBeer %}
+                        <li>{{ beerType }}</li>
+                    {% endfor %}
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="row mt-5">
+                <div class="col">
+
+                    <div id="map" data-lat="{{ startLat }}" data-long="{{ startLong }}"></div>
+
+                </div>
+            </div>
+
+        {% endif %}
+
+
     </div>
+
+    <script>
+
+        function initMap() {
+
+            let locations = JSON.parse({{ serializedBreweries|json_encode|raw }});
+
+            let centerLocation = {
+                lat: parseFloat(document.getElementById('map').getAttribute('data-lat')),
+                lng: parseFloat(document.getElementById('map').getAttribute('data-long'))
+            };
+
+            let map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: centerLocation
+            });
+
+            let infoWindow = new google.maps.InfoWindow();
+            let marker, i;
+
+            for(i = 0; i < locations.length - 1; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(
+                        locations[i].latitude, locations[i].longitude
+                    ),
+                    map: map
+                });
+
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function(){
+                        infoWindow.setContent(locations[i].name);
+                        infoWindow.open(map, marker);
+                    }
+                })(marker, i));
+            }
+        }
+
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key={{ google_map_api_key }}&callback=initMap">
+    </script>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {# {{ encore_entry_script_tags('googleMap') }} #}
 
 {% endblock %}

@@ -1,0 +1,12 @@
+body {
+    background-color: #F9F9F9;
+}
+
+.lightgrey-block {
+    background-color: #fafafa;
+}
+
+#map {
+    height: 600px;
+    width:100%;
+}
